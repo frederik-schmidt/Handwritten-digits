@@ -1,44 +1,54 @@
-from handwritten_digits.data import load_and_prepare_mnist_data
-from handwritten_digits.utils import *
+from handwritten_digits.data import load_and_prepare_mnist_data, one_hot
+from handwritten_digits.utils_np import *
 
 
-def nn_model_np(
-        X: np.array,
-        Y: np.array,
-        layer_dims: list,
-        num_iterations: int,
-        alpha: float,
-        print_cost: bool = True
-) -> dict:
+def deep_neural_network_np(
+    X: np.array,
+    Y: np.array,
+    layers_dims: list,
+    learning_rate: float = 0.0075,
+    num_iterations: int = 3000,
+    print_cost: bool = False,
+):
     """
-    Trains the model using gradient descent optimizer.
-    :param X: input images
-    :param Y: true labels
-    :param layer_dims: dimensions of each layer of the neural network
-    :param num_iterations: number of iterations to train
-    :param alpha: learning rate of the model
-    :param print_cost: flag indicating whether or not to print the costs
-    :return: parameters W and b
+    Trains the neural network using gradient descent.
+    :param X:
+    :param Y:
+    :param layers_dims:
+    :param learning_rate:
+    :param num_iterations:
+    :param print_cost:
+    :return:
     """
-    L = len(layer_dims)  # number of layers
-    params = initialize_params(layer_dims=layer_dims)
-    for i in range(num_iterations):
-        activations = forward_propagation(X, params)
-        grads = backward_propagation(X, Y, params, activations)
-        params = update_params(params, grads, alpha)
-        if print_cost and i % 50 == 0 or i == num_iterations - 1:
+    np.random.seed(1)
+    costs = []
+
+    params = initialize_params(layers_dims)
+
+    for i in range(0, num_iterations):
+        AL, caches = forward_propagation(X, params)
+        cost = compute_cross_entropy_cost(AL, Y)
+        grads = backward_propagation(AL, Y, caches)
+        params = update_params(params, grads, learning_rate)
+
+        if print_cost and i % 100 == 0:
             print(f"--- Iteration: {i} ---")
-            preds = get_predictions(activations["A" + str(L - 1)])
-            print("Accuracy:", compute_accuracy(preds, Y))
+            print("Cost:", cost)
+        if print_cost and i % 10 == 0:
+            costs.append(cost)
+
     return params
 
 
 if __name__ == "__main__":
     X_train, y_train, X_test, y_test = load_and_prepare_mnist_data()
-    params = nn_model_np(
+    X_train, y_train = X_train[:, 0:5000], y_train[:, 0:5000]
+    layers_dims = [784, 10, 10]
+    params = deep_neural_network_np(
         X=X_train,
         Y=y_train,
-        layer_dims=[784, 20, 10],
-        num_iterations=300,
-        alpha=0.1,
+        layers_dims=layers_dims,
+        learning_rate=0.001,
+        num_iterations=500,
+        print_cost=True,
     )
