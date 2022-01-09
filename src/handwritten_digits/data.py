@@ -5,12 +5,21 @@ from tensorflow.keras.datasets import mnist
 
 def one_hot(Y: np.array) -> np.array:
     """
-    Performs one hot encoding
+    Performs one hot encoding for a given array.
     :param Y: true labels
-    :return: one hot encoded labels
+    :return: one hot true encoded labels
     >>> Y_t = np.array([1,9])
     >>> one_hot(Y_t)
-    ... 1
+    array([[0., 0.],
+           [1., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 1.]])
     """
     one_hot_Y = np.zeros((Y.size, Y.max() + 1))
     one_hot_Y[np.arange(Y.size), Y] = 1
@@ -19,9 +28,10 @@ def one_hot(Y: np.array) -> np.array:
 
 def load_and_prepare_mnist_data():
     """
-    Loads the mnist dataset from Tensorflow and reshapes and standardizes the arrays
-    X_train_orig and X_test_orig which contain the images with handwritten digits.
-    :return: tuple containing images and labels for training and testing
+    Loads the mnist dataset from Tensorflow, reshapes and standardizes the arrays
+    X_train and X_test which contain the images with handwritten digits, one
+    hot encodes the labels y_train and y_test.
+    :return: tuple containing prepared images and labels for training and testing
     """
     (X_train_orig, y_train_orig), (X_test_orig, y_test_orig) = mnist.load_data()
     X_train_flat = X_train_orig.reshape(X_train_orig.shape[0], -1).T
