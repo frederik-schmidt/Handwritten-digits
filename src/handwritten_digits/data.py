@@ -3,20 +3,6 @@ from scipy.ndimage.interpolation import shift
 from tensorflow.keras.datasets import mnist
 
 
-def load_and_prepare_mnist_data():
-    """
-    Loads the mnist dataset from Tensorflow and reshapes and standardizes the arrays
-    X_train_orig and X_test_orig which contain the images with handwritten digits.
-    :return: tuple containing images and labels for training and testing
-    """
-    (X_train_orig, y_train), (X_test_orig, y_test) = mnist.load_data()
-    X_train_flat = X_train_orig.reshape(X_train_orig.shape[0], -1).T
-    X_train = X_train_flat / 255.0
-    X_test_flat = X_test_orig.reshape(X_test_orig.shape[0], -1).T
-    X_test = X_test_flat / 255.0
-    return X_train, y_train, X_test, y_test
-
-
 def one_hot(Y: np.array) -> np.array:
     """
     Performs one hot encoding
@@ -29,6 +15,21 @@ def one_hot(Y: np.array) -> np.array:
     one_hot_Y = np.zeros((Y.size, Y.max() + 1))
     one_hot_Y[np.arange(Y.size), Y] = 1
     return one_hot_Y.T
+
+
+def load_and_prepare_mnist_data():
+    """
+    Loads the mnist dataset from Tensorflow and reshapes and standardizes the arrays
+    X_train_orig and X_test_orig which contain the images with handwritten digits.
+    :return: tuple containing images and labels for training and testing
+    """
+    (X_train_orig, y_train_orig), (X_test_orig, y_test_orig) = mnist.load_data()
+    X_train_flat = X_train_orig.reshape(X_train_orig.shape[0], -1).T
+    X_train = X_train_flat / 255.0
+    X_test_flat = X_test_orig.reshape(X_test_orig.shape[0], -1).T
+    X_test = X_test_flat / 255.0
+    y_train, y_test = one_hot(y_train_orig), one_hot(y_test_orig)
+    return X_train, y_train, X_test, y_test
 
 
 def augment_data(X_train: np.array, y_train: np.array, shifts: tuple) -> tuple:
