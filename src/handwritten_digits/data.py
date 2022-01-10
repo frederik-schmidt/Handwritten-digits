@@ -1,16 +1,26 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.ndimage.interpolation import shift
 from tensorflow.keras.datasets import mnist
 
 
 def one_hot(Y: np.array) -> np.array:
     """
-    Performs one hot encoding
-    :param Y: true labels
-    :return: one hot encoded labels
+    Performs one hot encoding for a given array.
+    :param Y: true labels, of size (m)
+    :return: one hot true encoded labels, of size (10, m)
     >>> Y_t = np.array([1,9])
     >>> one_hot(Y_t)
-    ... 1
+    array([[0., 0.],
+           [1., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 0.],
+           [0., 1.]])
     """
     one_hot_Y = np.zeros((Y.size, Y.max() + 1))
     one_hot_Y[np.arange(Y.size), Y] = 1
@@ -19,9 +29,10 @@ def one_hot(Y: np.array) -> np.array:
 
 def load_and_prepare_mnist_data():
     """
-    Loads the mnist dataset from Tensorflow and reshapes and standardizes the arrays
-    X_train_orig and X_test_orig which contain the images with handwritten digits.
-    :return: tuple containing images and labels for training and testing
+    Loads the mnist dataset from Tensorflow, reshapes and standardizes the arrays
+    X_train and X_test which contain the images with handwritten digits, one
+    hot encodes the labels y_train and y_test.
+    :return: tuple containing prepared input images and labels for training and testing
     """
     (X_train_orig, y_train_orig), (X_test_orig, y_test_orig) = mnist.load_data()
     X_train_flat = X_train_orig.reshape(X_train_orig.shape[0], -1).T
@@ -36,10 +47,10 @@ def augment_data(X_train: np.array, y_train: np.array, shifts: tuple) -> tuple:
     """
     Performs data augmentation by shifting the input images.
     :param X_train: initial input images
-    :param y_train: true labels
+    :param y_train: initial true labels, of size (m)
     :param shifts: tuple of tuples indicating the shifts on x-axis and y-axis, e.g. shifts=((1,0),(-1,0))
-    :return X_train_aug: augmented input images
-    :return y_train_aug: true labels
+    :return X_train_aug: augmented input images, of size (784, m)
+    :return y_train_aug: true labels, of size (10, m)
     """
     X_train_aug = X_train.copy()
     y_train_aug = y_train.copy()
@@ -49,3 +60,17 @@ def augment_data(X_train: np.array, y_train: np.array, shifts: tuple) -> tuple:
             X_train_aug = np.vstack([X_train_aug, shifted_image])
             y_train_aug = np.append(y_train_aug, label)
     return X_train_aug, y_train_aug
+
+
+def plot_digit(X: np.array, Y: np.array, index: int) -> plt.imshow:
+    """
+    Plots a digit.
+    :param X: input images, of size (784, m)
+    :param Y: true labels, of size (10, m)
+    :param index: index of the input image to be plotted
+    :return: plotted input image
+    """
+    image = X[:, index].reshape(28, 28)
+    label = np.argmax(Y[:, index])
+    plt.imshow(image, cmap='Greys')
+    plt.title("Y = " + str(label))

@@ -1,4 +1,6 @@
-from handwritten_digits.data import load_and_prepare_mnist_data, one_hot
+""" This file trains a neural network fully implemented in numpy, based on the model
+built in the Deep Learning Specialization on Coursera. """
+from handwritten_digits.data import *
 from handwritten_digits.utils_np import *
 
 
@@ -6,19 +8,19 @@ def deep_neural_network_np(
     X: np.array,
     Y: np.array,
     layers_dims: list,
-    learning_rate: float = 0.0075,
+    alpha: float = 0.0075,
     num_iterations: int = 3000,
     print_cost: bool = False,
 ):
     """
     Trains the neural network using gradient descent.
-    :param X:
-    :param Y:
-    :param layers_dims:
-    :param learning_rate:
-    :param num_iterations:
-    :param print_cost:
-    :return:
+    :param X: input data, of size (784, m)
+    :param Y: true labels, of size (10, m)
+    :param layers_dims: network architecture of the neural network
+    :param alpha: learning rate
+    :param num_iterations: number of iterations of the optimization loop
+    :param print_cost: if set to True, cost will be printed every 100 iterations
+    :return: dict containing the learned weights W and biases b
     """
     np.random.seed(1)
     costs = []
@@ -29,7 +31,7 @@ def deep_neural_network_np(
         AL, caches = forward_propagation(X, params)
         cost = compute_cross_entropy_cost(AL, Y)
         grads = backward_propagation(AL, Y, caches)
-        params = update_params(params, grads, learning_rate)
+        params = update_params(params, grads, alpha)
 
         if print_cost and i % 100 == 0:
             print(f"--- Iteration: {i} ---")
@@ -48,7 +50,7 @@ if __name__ == "__main__":
         X=X_train,
         Y=y_train,
         layers_dims=layers_dims,
-        learning_rate=0.001,
+        alpha=0.1,
         num_iterations=500,
         print_cost=True,
     )
