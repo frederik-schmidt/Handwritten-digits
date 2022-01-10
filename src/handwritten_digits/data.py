@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.ndimage.interpolation import shift
 from tensorflow.keras.datasets import mnist
 
@@ -59,3 +60,17 @@ def augment_data(X_train: np.array, y_train: np.array, shifts: tuple) -> tuple:
             X_train_aug = np.vstack([X_train_aug, shifted_image])
             y_train_aug = np.append(y_train_aug, label)
     return X_train_aug, y_train_aug
+
+
+def plot_digit(X: np.array, Y: np.array, index: int) -> plt.imshow:
+    """
+    Plots a digit.
+    :param X: input images, of size (784, m)
+    :param Y: true labels, of size (10, m)
+    :param index: index of the input image to be plotted
+    :return: plotted input image
+    """
+    image = X[:, index].reshape(28, 28)
+    label = np.argmax(Y[:, index])
+    plt.imshow(image, cmap='Greys')
+    plt.title("Y = " + str(label))

@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from handwritten_digits.data import plot_digit
 
 
 def initialize_params(layer_dims: list) -> dict:
@@ -224,3 +226,30 @@ def predict(X: np.array, params: dict) -> tuple:
     preds = preds.astype(float)
 
     return preds, probs
+
+
+def compute_accuracy(preds: np.array, Y: np.array) -> float:
+    """
+    Computes the accuracy of predictions with respect to true labels.
+    :param preds: predicted values, of shape (10, m)
+    :param Y: true labels, of shape (10, m)
+    :return: accuracy between 0 and 1
+    """
+    m = Y.shape[1]
+    predicted_digit = preds.argmax(axis=0).reshape(1, m)
+    true_digit = Y.argmax(axis=0).reshape(1, m)
+    return np.sum((predicted_digit == true_digit) / (m))
+
+
+def test_prediction(X: np.array, Y: np.array, pred: np.array, index: int) -> plt.imshow:
+    """
+    Shows for selected input images the true and predicted labels.
+    :param X: input images, of shape (784, m)
+    :param Y: true labels, of shape (10, m)
+    :param pred: predicted labels, of shape (10, m)
+    :param index: index of the input image to be tested
+    :return: plotted input image
+    """
+    print("Prediction:", str(np.argmax(pred[index])))
+    print("True label:", str(np.argmax(Y[:, index])))
+    plot_digit(X, Y, index)
