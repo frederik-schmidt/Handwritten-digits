@@ -23,7 +23,7 @@ def initialize_params(layer_dims: list) -> dict:
 def relu(Z: np.array) -> np.array:
     """
     Implements forward propagation for a single ReLU unit.
-    :param Z: numpy array of any shape
+    :param Z: pre-activation parameter Z, of any shape
     :return A: post-activation parameter A, of the same shape as Z
     """
     A = np.maximum(0, Z)
@@ -33,8 +33,8 @@ def relu(Z: np.array) -> np.array:
 def softmax(Z: np.array) -> np.array:
     """
     Implements forward propagation for a single Softmax unit.
-    :param Z: numpy array of any shape
-    :return A: post-activation parameter A, of the same shape as z
+    :param Z: pre-activation parameter Z, of any shape
+    :return A: post-activation parameter A, of same shape as z
     """
     A = np.exp(Z) / sum(np.exp(Z))
     return A
@@ -45,11 +45,11 @@ def linear_activation_forward(
 ) -> tuple:
     """
     Implements forward propagation for a single layer.
-    :param A_prev: gradient of cost with respect to A (of previous layer l-1), same shape as A_prev
-    :param W: gradient of cost with respect to W (current layer l), same shape as W
-    :param b: gradient of cost with respect to b (current layer l), same shape as b
+    :param A_prev: gradient of cost with respect to A (of previous layer l-1), of same shape as A_prev
+    :param W: gradient of cost with respect to W (current layer l), of same shape as W
+    :param b: gradient of cost with respect to b (current layer l), of same shape as b
     :param activation: activation function to be used
-    :return A: post-activation parameter A
+    :return A: post-activation parameter A (of current layer l), of shape (size of previous layer, m)
     :return cache: cached values for computing backward pass efficiently
     """
     Z = np.dot(W, A_prev) + b
@@ -70,9 +70,9 @@ def linear_activation_forward(
 def forward_propagation(X: np.array, params: np.array) -> tuple:
     """
     Implements forward propagation over all layers.
-    :param X: input data or activations of previous layer
+    :param X: input data or activations of previous layer, of shape (784, m)
     :param params: dict containing the weight matrix W and bias vector b
-    :return AL: output of forward pass AL
+    :return AL: post-activation parameter forward pass AL, of shape (size of previous layer l-1, m)
     :return caches: cached values for computing backward pass efficiently
     """
     caches = []
@@ -96,8 +96,8 @@ def forward_propagation(X: np.array, params: np.array) -> tuple:
 def compute_cross_entropy_cost(AL: np.array, Y: np.array) -> float:
     """
     Implements the cross-entropy cost function.
-    :param AL: label predictions
-    :param Y: true labels
+    :param AL: post-activation parameter AL (of current layer L), of shape (size of previous layer l-1, m)
+    :param Y: true labels, of size (10, m)
     :return: cross-entropy cost
     """
     m = Y.size
@@ -113,9 +113,9 @@ def linear_backward(dZ: np.array, A_prev: np, W, b):
     :param A_prev: activations from previous layer (or input data)
     :param W: weight matrix W
     :param b: bias vector b
-    :return dA_prev: gradient of cost with respect to the activation (previous layer l-1)
-    :return dW: gradient of cost with respect to W (current layer l)
-    :return db: gradient of the cost with respect to b (current layer l)
+    :return dA_prev: gradient of cost with respect to the activation (of previous layer l-1)
+    :return dW: gradient of cost with respect to W (of current layer l), same shape as W
+    :return db: gradient of the cost with respect to b (of current layer l), same shape as W
     """
     m = A_prev.shape[1]
 
@@ -133,11 +133,11 @@ def linear_backward(dZ: np.array, A_prev: np, W, b):
 def relu_backward(dA: np.array, cache: tuple) -> tuple:
     """
     Implements backward propagation for a single ReLU unit.
-    :param dA: post-activation gradient for current layer l
+    :param dA: post-activation gradient (of current layer l)
     :param cache: cached values for computing backward pass efficiently
-    :return dA_prev: gradient of cost with respect to the activation (previous layer l-1)
-    :return dW: gradient of cost with respect to W (current layer l)
-    :return db: gradient of the cost with respect to b (current layer l)
+    :return dA_prev: gradient of cost with respect to the activation (of previous layer l-1)
+    :return dW: gradient of cost with respect to W (of current layer l)
+    :return db: gradient of the cost with respect to b (of current layer l)
     """
     A_prev, W, b, Z = cache
 
@@ -152,12 +152,12 @@ def relu_backward(dA: np.array, cache: tuple) -> tuple:
 def softmax_backward(AL: np.array, Y: np.array, cache: tuple):
     """
     Implements backward propagation for a single Softmax unit.
-    :param AL: post-activation value of last layer L
-    :param Y: true labels
+    :param AL: post-activation parameter AL (of current layer L)
+    :param Y: true labels, of size (10, m)
     :param cache: cached values for computing backward pass efficiently
-    :return dA_prev: gradient of cost with respect to the activation (previous layer l-1)
-    :return dW: gradient of cost with respect to W (current layer l)
-    :return db: gradient of the cost with respect to b (current layer l)
+    :return dA_prev: gradient of cost with respect to the activation (of previous layer l-1)
+    :return dW: gradient of cost with respect to W (of current layer l)
+    :return db: gradient of the cost with respect to b (of current layer l)
     """
     A_prev, W, b, _ = cache
     dZ = AL - Y
@@ -171,7 +171,7 @@ def backward_propagation(AL: np.array, Y: np.array, caches: list) -> dict:
     """
     Implements backward propagation over all layers.
     :param AL: post-activation value of last layer L
-    :param Y: true labels
+    :param Y: true labels, of size (10, m)
     :param caches: cached values from forward pass
     :return: gradients
     """
@@ -211,11 +211,11 @@ def update_params(params: dict, grads: dict, alpha: float) -> dict:
 
 def predict(X: np.array, params: dict) -> tuple:
     """
-    Predicts the results of a L-layer neural network.
-    :param X: input data
+    Predicts labels based on the parameters learned by the neural network.
+    :param X: input images, of size (784, m)
     :param params: dict containing the learned weight matrix W and bias vector b
-    :return preds: label predictions
-    :return probs:
+    :return preds: predicted label
+    :return probs: predicted probability for each digit
     """
     probs, caches = forward_propagation(X, params)
 

@@ -14,8 +14,8 @@ def deep_neural_network_np(
 ):
     """
     Trains the neural network using gradient descent.
-    :param X: input data
-    :param Y: true labels
+    :param X: input data, of size (784, m)
+    :param Y: true labels, of size (10, m)
     :param layers_dims: network architecture of the neural network
     :param alpha: learning rate
     :param num_iterations: number of iterations of the optimization loop
