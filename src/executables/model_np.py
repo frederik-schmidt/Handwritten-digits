@@ -10,7 +10,6 @@ def deep_neural_network_np(
     layers_dims: list,
     alpha: float = 0.0075,
     num_iterations: int = 3000,
-    print_cost: bool = False,
 ):
     """
     Trains the neural network using gradient descent.
@@ -19,25 +18,23 @@ def deep_neural_network_np(
     :param layers_dims: network architecture of the neural network
     :param alpha: learning rate
     :param num_iterations: number of iterations of the optimization loop
-    :param print_cost: if set to True, cost will be printed every 100 iterations
     :return: dict containing the learned weights W and biases b
     """
     np.random.seed(1)
-    costs = []
-
     params = initialize_params(layers_dims)
 
-    for i in range(0, num_iterations):
+    for i in range(num_iterations):
         AL, caches = forward_propagation(X, params)
-        cost = compute_cross_entropy_cost(AL, Y)
         grads = backward_propagation(AL, Y, caches)
         params = update_params(params, grads, alpha)
 
-        if print_cost and i % 100 == 0:
+        if i % 100 == 0 or i == num_iterations - 1:
+            cost = compute_cross_entropy_cost(AL, Y)
+            preds, _ = predict(X, params)
+            accuracy = compute_accuracy(preds, Y)
             print(f"--- Iteration: {i} ---")
             print("Cost:", cost)
-        if print_cost and i % 10 == 0:
-            costs.append(cost)
+            print("Accuracy:", accuracy)
 
     return params
 
@@ -52,5 +49,4 @@ if __name__ == "__main__":
         layers_dims=layers_dims,
         alpha=0.1,
         num_iterations=500,
-        print_cost=True,
     )
