@@ -250,6 +250,6 @@ def test_prediction(X: np.array, Y: np.array, pred: np.array, index: int) -> plt
     :param index: index of the input image to be tested
     :return: plotted input image
     """
-    print("Prediction:", str(np.argmax(pred[index])))
+    print("Prediction:", str(np.argmax(pred[:, index])))
     print("True label:", str(np.argmax(Y[:, index])))
     plot_digit(X, Y, index)
