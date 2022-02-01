@@ -61,8 +61,7 @@ def deep_neural_network_np(
 
 if __name__ == "__main__":
     X_train, y_train, X_test, y_test = load_and_prepare_mnist_data()
-    X_train, y_train = X_train[:, 0:5000], y_train[:, 0:5000]
-    layers_dims = [784, 10, 10]
+    layers_dims = [784, 128, 32, 10]
     params = deep_neural_network_np(
         X=X_train,
         Y=y_train,
