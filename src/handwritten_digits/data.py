@@ -1,5 +1,7 @@
-import numpy as np
+import math
+
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.ndimage.interpolation import shift
 from tensorflow.keras.datasets import mnist
 
@@ -41,6 +43,36 @@ def load_and_prepare_mnist_data():
     X_test = X_test_flat / 255.0
     y_train, y_test = one_hot(y_train_orig), one_hot(y_test_orig)
     return X_train, y_train, X_test, y_test
+
+
+def random_mini_batches(X: np.array, Y: np.array, mini_batch_size: int = 64) -> list:
+    """
+    Creates random mini-batches from input data and true labels.
+    :param X: input data, of size (784, m)
+    :param Y: true labels, of size (m)
+    :param mini_batch_size: number of training examples per mini-batch
+    :return: list containing a tuple with X and Y for every mini-batch
+    """
+    m = X.shape[1]  # number of training examples
+    mini_batches = []
+    # Shuffle
+    permutation = list(np.random.permutation(m))
+    shuffled_X = X[:, permutation]
+    shuffled_Y = Y[:, permutation]
+    # Partition
+    num_complete_minibatches = math.floor(m / mini_batch_size)
+    for k in range(0, num_complete_minibatches):
+        mini_batch_X = shuffled_X[:, k * mini_batch_size: (k + 1) * mini_batch_size]
+        mini_batch_Y = shuffled_Y[:, k * mini_batch_size: (k + 1) * mini_batch_size]
+        mini_batch = (mini_batch_X, mini_batch_Y)
+        mini_batches.append(mini_batch)
+    # Handle end case
+    if m % mini_batch_size != 0:
+        mini_batch_X = shuffled_X[:, num_complete_minibatches * mini_batch_size: m]
+        mini_batch_Y = shuffled_Y[:, num_complete_minibatches * mini_batch_size: m]
+        mini_batch = (mini_batch_X, mini_batch_Y)
+        mini_batches.append(mini_batch)
+    return mini_batches
 
 
 def augment_data(X_train: np.array, y_train: np.array, shifts: tuple) -> tuple:
